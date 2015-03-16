@@ -14,10 +14,12 @@ struct nota{
 	float nota2;
 };
 
+float calculaMedia(struct nota *vetor_nota, int notas_tam, int matricula);
+
 int main(int argc, char *argv[]){
 
 	FILE *notas, *alunos;
-	int c, n_linhas = 0, i;
+	int c, alunos_tam = 0, notas_tam = 0, i;
 	struct nota vetor_nota[50];
 	struct aluno vetor_aluno[50];
 
@@ -38,46 +40,56 @@ int main(int argc, char *argv[]){
 	while(!feof(alunos)){
 		c = fgetc(alunos);
 		if( c == '\n')
-			n_linhas++;
+			alunos_tam++;
 	}
 
 	//Verifica se o número de registros não excede o permitido
-	if(n_linhas > 50){
-		fprintf(stderr, "Número de registros do arquivo de alunos doi excedido! \n");
+	if(alunos_tam > 50){
+		fprintf(stderr, "Número de registros do arquivo de alunos foi excedido! \n");
 		return 0;
 	}
 
-	//Lê os registros de alunos para o vetor_alunos
-	/*fseek(alunos, 0, SEEK_SET); 
-	for(i=0; i<= n_linhas; i++){
-		fscanf(alunos, "%d", &vetor_aluno[i] );
-
-	}*/
-
-
-	//Abre o arquivo de notas e arvazena em no vetor_notas
 	notas = fopen("notas.txt", "r");
 	if(notas == NULL){
 		fprintf(stderr, "Arquivo de notas não está acessivel \n");
 		return 0;
 	}
 
-	while(!feof(alunos)){
-		c = fgetc(alunos);
+	while(!feof(notas)){
+		c = fgetc(notas);
 		if( c == '\n')
-			n_linhas++;
+			notas_tam++;
+	}
+
+	//Verifica se o número de registros não excede o permitido
+	if(notas_tam > 50){
+		fprintf(stderr, "Número de registros do arquivo de notas foi excedido! \n");
+		return 0;
 	}
 
 	fseek(notas, 0, SEEK_SET);
-	for(i=0; i<=n_linhas; i++){
+	for(i=0; i<notas_tam; i++){
 		fscanf(notas, "%d ", &vetor_nota[i].matricula);
 		fscanf(notas, "%f ", &vetor_nota[i].nota1);
 		fscanf(notas, "%f", &vetor_nota[i].nota2);
 	}
-
-	printf("%d", vetor_nota[1].matricula);
+	
+	//BUSCAR POR NOME AQUI
 
 }
 
-//Criar função para exibir medias;
+
+//Função recebe uma matricula e retorna a media
+float calculaMedia(struct nota *vetor_nota, int notas_tam, int matricula){
+	int i = 0;
+	float media = 0;
+	for (i = 0; i < notas_tam; ++i)	{
+		if(vetor_nota[i].matricula == matricula){
+			media = vetor_nota[i].nota1 + vetor_nota[i].nota2;
+			media = media/2;
+		}	
+	}
+	return media;
+}
+
 
