@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 //Estrutura que irá armazenar os dados dos alunos
 struct aluno{
@@ -19,9 +20,10 @@ float calculaMedia(struct nota *vetor_nota, int notas_tam, int matricula);
 int main(int argc, char *argv[]){
 
 	FILE *notas, *alunos;
+	char linha[100], *retorno;
 	int c, alunos_tam = 0, notas_tam = 0, i;
 	struct nota vetor_nota[50];
-	struct aluno vetor_aluno[50];
+	struct aluno item_aluno;
 
 	//Verifica se o número de parametros passados estão corretos
 	if (argc != 2){
@@ -37,18 +39,7 @@ int main(int argc, char *argv[]){
 	}
 
 	//Conta as linhas do arquivo de alunos para saber quantos registros exsitem 
-	while(!feof(alunos)){
-		c = fgetc(alunos);
-		if( c == '\n')
-			alunos_tam++;
-	}
-
-	//Verifica se o número de registros não excede o permitido
-	if(alunos_tam > 50){
-		fprintf(stderr, "Número de registros do arquivo de alunos foi excedido! \n");
-		return 0;
-	}
-
+	
 	notas = fopen("notas.txt", "r");
 	if(notas == NULL){
 		fprintf(stderr, "Arquivo de notas não está acessivel \n");
@@ -74,7 +65,15 @@ int main(int argc, char *argv[]){
 		fscanf(notas, "%f", &vetor_nota[i].nota2);
 	}
 	
-	//BUSCAR POR NOME AQUI
+	//Escaneia linha por linha do arquivo de alunos, copia a matricula e o nome, verifica se o nome contem o argumento passado. Se contem o argumento passado ele calcula a média e exibe na tela.
+	fseek(alunos, 0, SEEK_SET);  //Retorna ao inicio do arquivo
+	while(fgets(linha, 100, alunos)){
+		sscanf(linha ,"%d %[^\n]s", &item_aluno.matricula, &item_aluno.nome);
+		retorno = strstr(item_aluno.nome, argv[1]);
+		if(retorno != NULL){
+			printf("%f %s \n", calculaMedia(vetor_nota, notas_tam, item_aluno.matricula), item_aluno.nome);
+		}
+	}
 
 }
 
@@ -91,5 +90,3 @@ float calculaMedia(struct nota *vetor_nota, int notas_tam, int matricula){
 	}
 	return media;
 }
-
-
